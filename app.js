@@ -3,47 +3,45 @@ const app = express();
 const db = require('./db');
 
 
-app.get('/', (req, res, next)=> {
-  const users = db.findAllUsers();
-  res.send(`
+
+const view = (users)=> {
+  return `
     <html>
     <head>
+    <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css'></link>
     </head>
     <body>
+      <div class='container'>
+      <h1>
+        <a href='/'>
+          Wizard Users
+        </a>
+      </h1>
       <ul>
         ${
           users.map(user => {
             return `
-              <li>${ user.name }</li>
+              <li>
+                <a href='/users/${user.id}'>
+                  ${ user.name }</li>
+                </a>
             `;
-          })
+          }).join('')
         }
       </ul>
+      </div>
     </body>
     </html>
-    `);
+    `;
+}
+app.get('/', (req, res, next)=> {
+  const users = db.findAllUsers();
+  res.send(view(users));
 });
 
 app.get('/users/:id', (req, res, next)=> {
   const user = db.findUser(req.params.id * 1);
-  const users = [ user ];
-  res.send(`
-    <html>
-    <head>
-    </head>
-    <body>
-      <ul>
-        ${
-          users.map(user => {
-            return `
-              <li>${ user.name }</li>
-            `;
-          })
-        }
-      </ul>
-    </body>
-    </html>
-    `);
+  res.send(view([ user ]));
 });
 
 module.exports = app;
