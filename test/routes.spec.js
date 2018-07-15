@@ -17,6 +17,30 @@ describe('routes', ()=> {
     });
   });
 
+  describe('POST /users', ()=> {
+    it('creates a user and redirects', ()=> {
+      return app.post('/users')
+        .send('name=shep')
+        .expect(302)
+        .then( resp => {
+          const users = db.findAllUsers();
+          const user = db.findUser(4);
+          expect(user.name).to.equal('shep');
+        });
+    });
+  });
+
+  describe('DELETE /users', ()=> {
+    it('deletes a user and redirects', ()=> {
+      return app.delete('/users/1')
+        .expect(302)
+        .then( resp => {
+          const users = db.findAllUsers();
+          expect(users.length).to.equal(2);
+        });
+    });
+  });
+
   describe('/users/:id', ()=> {
     it('sends back a response with the user', ()=> {
       return app.get('/users/2')
